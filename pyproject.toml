@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 # 1. PyPI에 등록될 배포 이름 (pip install MultiFactor)
 name = "MultiFactor"
-version = "0.2.0"
+version = "0.2.4"
 authors = [
   { name="HANHO", email="hanhoman@gmail.com" },
 ]
@@ -26,6 +26,7 @@ dependencies = [
     "pandas",
 	"numpy",	
 	"matplotlib",
+	"yfinance",
 ]
 
 # 3. src 폴더 안의 패키지를 자동으로 찾도록 설정

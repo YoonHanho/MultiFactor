@@ -8,6 +8,8 @@ def get_us_value(stock_list):
     미국 주식 밸류 계산 (yfinance 기반)
     참고: yfinance의 Ticker.info를 사용하므로 다수 종목 수집 시 시간이 소요됩니다.
     """
+    # 티커 클렌징 (yfinance 호환)
+    stock_list = {k.replace('/', '-'): v for k, v in stock_list.items()}
     result = []
     
     for i, (scode, sname) in enumerate(stock_list.items()):

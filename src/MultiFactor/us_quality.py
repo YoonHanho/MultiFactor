@@ -8,6 +8,8 @@ def get_us_quality(stock_list):
     미국 주식 퀄리티 계산 (yfinance 기반)
     revenue_rate, oper_income_rate, net_income_rate, ROE 등 
     """
+    # 티커 클렌징 (yfinance 호환)
+    stock_list = {k.replace('/', '-'): v for k, v in stock_list.items()}
     result_fin = []
     
     for i, (scode, sname) in enumerate(stock_list.items()):

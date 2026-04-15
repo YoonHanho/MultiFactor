@@ -12,6 +12,8 @@ def get_us_momentum(stock_list):
     SD = ED - timedelta(days=500) # 주간/월간/연간 모멘텀을 위해 넉넉히 500일 전 데이터 요청
     
     # yfinance로 한 번에 여러 종목을 수집하면 빠름 (단기/중기/장기 모두를 위해 Daily 데이터 사용)
+    # yfinance 호환을 위해 티커의 / 을 - 로 변경 (예: BRK/B -> BRK-B)
+    stock_list = {k.replace('/', '-'): v for k, v in stock_list.items()}
     tickers = list(stock_list.keys())
     
     # 1. 주가 및 거래량 데이터 일괄 수집 (yfinance.download)

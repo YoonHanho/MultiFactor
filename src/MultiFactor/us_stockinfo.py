@@ -41,7 +41,11 @@ def get_us_stockinfo(N=500):
         if 'Symbol' in df.columns:
             df = df.rename(columns={'Symbol': 'Code'})
 
-    # 4. 상위 N개 추출 및 인덱스 초기화
+    # 4. 종목코드 클렌징 (yfinance 호환을 위해 / 를 - 로 변경. 예: BRK/B -> BRK-B)
+    if 'Code' in df.columns:
+        df['Code'] = df['Code'].str.replace('/', '-', regex=False)
+
+    # 5. 상위 N개 추출 및 인덱스 초기화
     df = df.head(N).reset_index(drop=True)
     
     print("미국 종목 추출 건수 ", len(df))

@@ -702,6 +702,37 @@ mf.get_quality_one('005930')
 
 <br>
 
+## 🌎 미국 주식 분석 (US Stocks) 🇺🇸
+
+**MultiFactorUS** 클래스를 사용하면 미국 주식(S&P 500, NASDAQ, NYSE 등)에 대해서도 국내 주식과 동일한 인터페이스로 멀티팩터 분석을 수행할 수 있습니다. 미국 주식 분석은 `yfinance` 라이브러리를 기반으로 구동됩니다.
+
+### 1. 미국 주식 분석 시작하기
+```python
+from MultiFactor import MultiFactorUS
+
+# 미국 시가총액 상위 100개 종목 분석 객체 생성 (기본값 500)
+mf_us = MultiFactorUS(N=100)
+
+# 멀티팩터 종합 점수 및 순위 계산
+df_us = mf_us.get_score()
+```
+
+### 2. 주요 특징
+* **실시간 데이터**: `yfinance`를 활용하여 미국 시장의 최신 주가 및 재무 지표를 수집합니다.
+* **티커 호환성**: `BRK-B`와 같이 슬래시나 마침표가 포함된 특수 티커들을 내부적으로 자동 변환하여 데이터 수집 오류를 최소화합니다.
+* **동일한 환경**: 국내 주식과 동일한 함수명(`get_score`, `get_Ngroup` 등)을 사용하므로 기존 코드를 쉽게 재사용할 수 있습니다.
+
+### 3. 스타일별 가중치 및 그룹화 활용
+```python
+# '추세성장' 스타일 가중치 적용
+df_adj = mf_us.get_score_adj_weight(df_us, weight='추세성장')
+
+# 종합 순위에 따라 10개 그룹으로 분류 및 종목 출력
+mf_us.get_Ngroup(df_adj, Ngroup=10)
+```
+
+<br>
+
 ## ⚠️ 투자자 유의사항 (Disclaimer)
 
 > **MultiFactor** 라이브러리에서 제공하는 모든 데이터와 분석 결과(종합 점수, 순위 등)는 투자 참고용일 뿐이며, 그 정확성이나 완전성을 보장하지 않습니다. 
