@@ -21,26 +21,26 @@ def get_us_momentum(stock_list):
     def get_each_momentum(ticker):
         try:
             # 해당 종목의 데이터 추출 (종가, 거래량)
-            df = data[['Adj Close', 'Volume']].xs(ticker, axis=1, level=1)
+            df = data[['Close', 'Volume']].xs(ticker, axis=1, level=1)
             df = df.dropna()
             
             if len(df) < 20: 
                 return None, None
                 
             # 2. 주가 모멘텀 지표 생성
-            mom_1d = ( df.iloc[-1]['Adj Close'] / df.iloc[-2]['Adj Close'] - 1 )  * 100    # 전일
-            mom_1w = ( df.iloc[-1]['Adj Close'] / df.iloc[-5]['Adj Close'] - 1 )  * 100    # 주간
-            mom_1m = ( df.iloc[-1]['Adj Close'] / df.iloc[-20]['Adj Close'] - 1 )  * 100   # 월간
+            mom_1d = ( df.iloc[-1]['Close'] / df.iloc[-2]['Close'] - 1 )  * 100    # 전일
+            mom_1w = ( df.iloc[-1]['Close'] / df.iloc[-5]['Close'] - 1 )  * 100    # 주간
+            mom_1m = ( df.iloc[-1]['Close'] / df.iloc[-20]['Close'] - 1 )  * 100   # 월간
     
             # 3개월간 (데이터 부족 시 NaN 처리)
             try:
-                mom_3m = ( df.iloc[-1]['Adj Close'] / df.iloc[-60]['Adj Close'] - 1 )  * 100
+                mom_3m = ( df.iloc[-1]['Close'] / df.iloc[-60]['Close'] - 1 )  * 100
             except:
                 mom_3m = np.nan
         
             # 연간 (데이터 부족 시 NaN 처리)
             try:
-                mom_1y = ( df.iloc[-1]['Adj Close'] / df.iloc[-250]['Adj Close'] - 1 )  * 100
+                mom_1y = ( df.iloc[-1]['Close'] / df.iloc[-250]['Close'] - 1 )  * 100
             except:
                 mom_1y = np.nan
         

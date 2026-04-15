@@ -5,30 +5,44 @@ import numpy as np
 
 def get_us_stockinfo(N=500): 
     """
-    미국 종목정보 추출 (S&P 500 기준 또는 전체 거래소)
+    미국 종목정보 추출 (GitHub S&P 500 데이터 활용 및 정렬)
     """
-    # S&P 500 종목 리스트 가져오기 (가장 안정적인 대형주 500개)
-    # 만약 전체 거래소 상위 500개를 원한다면 별도 로직 필요하나 S&P 500이 '시가총액 500개'에 가장 부합하는 기본 리스트임
+    url = "https://raw.githubusercontent.com/Ate329/top-us-stock-tickers/master/tickers/sp500.csv"
+    
     try:
-        df = fdr.StockListing('S&P500')
-    except:
-        # S&P500 리스트 실패 시 NASDAQ, NYSE 등에서 시가총액 상위 추출 시도
-        df_nasdaq = fdr.StockListing('NASDAQ')
-        df_nyse = fdr.StockListing('NYSE')
-        df = pd.concat([df_nasdaq, df_nyse])
+        # 1. GitHub에서 최신 S&P 500 데이터 로드
+        df = pd.read_csv(url)
+        
+        # 2. 컬럼명을 기존 시스템과 동일하게 변경
+        column_map = {
+            'symbol': 'Code',
+            'name': 'Name',
+            'marketCap': 'MarketCap',
+            'industry': 'Industry',
+            'price': 'Price',
+            'volume': 'Volume'
+        }
+        df = df.rename(columns=column_map)
+        
+        # 3. 시가총액 순으로 내림차순 정렬
+        if 'MarketCap' in df.columns:
+            df = df.sort_values(by='MarketCap', ascending=False)
+            
+    except Exception as e:
+        print(f"GitHub 데이터 로드 실패: {e}. 기존 FDR 방식으로 전환합니다.")
+        # 실패 시 기존 FinanceDataReader 로직 사용
+        try:
+            df = fdr.StockListing('S&P500')
+        except:
+            df_nasdaq = fdr.StockListing('NASDAQ')
+            df_nyse = fdr.StockListing('NYSE')
+            df = pd.concat([df_nasdaq, df_nyse])
+        
+        if 'Symbol' in df.columns:
+            df = df.rename(columns={'Symbol': 'Code'})
 
-    # 종목 추출 건수 체크 및 필터링 (필요 시)
-    # 미국 주식은 이미 fdr 리스트에 시가총액 정보 등이 포함되어 있을 수 있음
-    # 하지만 yfinance 호환을 위해 'Symbol' 또는 'Ticker' 컬럼이 중요함
-    
-    if 'Symbol' in df.columns:
-        df = df.rename(columns={'Symbol': 'Code'})
-    
-    # 상위 N개 추출
-    df = df.head(N)
-    
-    # 데이터프레임 인덱스 초기화
-    df = df.reset_index(drop=True)
+    # 4. 상위 N개 추출 및 인덱스 초기화
+    df = df.head(N).reset_index(drop=True)
     
     print("미국 종목 추출 건수 ", len(df))
     
