@@ -22,7 +22,7 @@ from . import score_adj_weight as scw
 
 
 
-class MultiFactor:
+class MultiFactorKR:
     def __init__(self, N: int):
         """
         멀티팩터 : 분석 대상 종목수 (시가총액 상위 N개)

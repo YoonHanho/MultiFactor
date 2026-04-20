@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 # 1. PyPI에 등록될 배포 이름 (pip install MultiFactor)
 name = "MultiFactor"
-version = "0.2.4"
+version = "0.2.5"
 authors = [
   { name="HANHO", email="hanhoman@gmail.com" },
 ]

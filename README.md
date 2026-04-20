@@ -56,7 +56,7 @@
 ### 1. 패키지 불러오기 
 다음 코드로 멀티팩터 패키지를 불러옵니다. 
 ```python
-from MultiFactor import MultiFactor
+from MultiFactor import MultiFactorKR
 ```
 
 <br>
@@ -64,7 +64,7 @@ from MultiFactor import MultiFactor
 ### 2. 멀티팩터 객체 생성  
 멀티팩터 객체 생성 시, 수집 대상 종목 수(N)를 반드시 지정해야 합니다. N은 시가총액 상위 순으로 N개까지 종목을 수집함을 의미합니다. N이 커질수록 데이터 수집 시간이 길어지므로, 초기 테스트에는 종목수(N)를 5~50 사이로 지정한 후 차츰 늘려가기를 권장합니다. 
 ```python
-mf = MultiFactor(N=50)  # 시가총액 상위 50개 종목 
+mf = MultiFactorKR(N=50)  # 시가총액 상위 50개 종목 
 ```
 <br>
 
@@ -137,8 +137,8 @@ print(stock_list)
 ```get_score```함수로 멀티팩터 종합점수 데이터를 간단하게 생성할 수 있습니다. 다음 코드는 시가총액 상위 10개 종목의 종합 점수를 추출하여 파이썬 데이터프레임(df)에 저장합니다.
 
 ```python 
-from MultiFactor import MultiFactor
-mf = MultiFactor(N=10) 
+from MultiFactor import MultiFactorKR
+mf = MultiFactorKR(N=10) 
 df = mf.get_score()
 ```
 
@@ -411,7 +411,7 @@ df[cols].head()
 
 ```python
 # 시가총액 상위 100 종목 멀티팩터 종합점수 추출 
-mf = MultiFactor(N=100)  
+mf = MultiFactorKR(N=100)  
 df = mf.get_score()  
 ``` 
 
@@ -589,7 +589,7 @@ df[['scode', 'sname', '종합점수', '종합순위']].head()
 get_Ngroup() 함수를 사용하면 전체 종목을 원하는 개수의 그룹으로 깔끔하게 묶어 요약할 수 있습니다.
 
 ```python
-mf = MultiFactor(N=100)
+mf = MultiFactorKR(N=100)
 df = mf.get_score()  
 mf.get_Ngroup(df, Ngroup=10)  # 종합점수 상위 순 10개 그룹으로 분류
 
