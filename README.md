@@ -731,7 +731,7 @@ mf_kr = MultiFactorKR(N=100)
 df = mf_kr.get_score()
 
 # 가치성장 전략 적용
-df = mf.get_score_adj_weight(df, weight='가치성장') 
+df = mf_kr.get_score_adj_weight(df, weight='가치성장') 
 
 df[['scode', 'sname', '종합점수', '종합순위']].head()  
 ```
@@ -793,7 +793,7 @@ mf_us = MultiFactorUS(N=100)
 df = mf_us.get_score()
 
 # 가치성장 전략 적용
-df = mf.get_score_adj_weight(df, weight='가치성장') 
+df = mf_us.get_score_adj_weight(df, weight='가치성장') 
 
 df[['scode', 'sname', '종합점수', '종합순위']].head()  
 ```
@@ -858,7 +858,7 @@ mf_kr = MultiFactorKR(N=100)
 df = mf_kr.get_score()
 
 # 추세성장 전략 적용
-df = mf.get_score_adj_weight(df, weight='추세성장') 
+df = mf_kr.get_score_adj_weight(df, weight='추세성장') 
 
 df[['scode', 'sname', '종합점수', '종합순위']].head()  
 ```
@@ -921,7 +921,7 @@ mf_us = MultiFactorUS(N=100)
 df = mf_us.get_score()
 
 # 추세성장 전략 적용
-df = mf.get_score_adj_weight(df, weight='추세성장') 
+df = mf_us.get_score_adj_weight(df, weight='추세성장') 
 
 df[['scode', 'sname', '종합점수', '종합순위']].head()  
 ```
@@ -986,7 +986,7 @@ mf_kr = MultiFactorKR(N=100)
 df = mf_kr.get_score()
 
 # 역발상 전략 적용
-df = mf.get_score_adj_weight(df, weight='역발상') 
+df = mf_kr.get_score_adj_weight(df, weight='역발상') 
 
 df[['scode', 'sname', '종합점수', '종합순위']].head()  
 ```
@@ -1046,7 +1046,7 @@ mf_us = MultiFactorUS(N=100)
 df = mf_us.get_score()
 
 # 역발상 전략 적용
-df = mf.get_score_adj_weight(df, weight='역발상') 
+df = mf_us.get_score_adj_weight(df, weight='역발상') 
 
 df[['scode', 'sname', '종합점수', '종합순위']].head()  
 ```
@@ -1111,7 +1111,7 @@ mf_kr = MultiFactorKR(N=100)
 df = mf_kr.get_score()  
 
 # 종합점수 상위 순 10개 그룹으로 분류
-mf.get_Ngroup(df, Ngroup=10)  
+mf_kr.get_Ngroup(df, Ngroup=10)  
 
 # [출력 결과]
 # 1 : SK스퀘어, SK하이닉스, 삼성E&A, HD현대, 에이피알, 한국금융지주, 삼성전자, LG이노텍, 키움증권, LS ELECTRIC
@@ -1134,7 +1134,7 @@ mf_us = MultiFactorUS(N=100)
 df = mf_us.get_score()  
 
 # 종합점수 상위 순 10개 그룹으로 분류
-mf.get_Ngroup(df, Ngroup=10)  
+mf_us.get_Ngroup(df, Ngroup=10)  
 
 # [출력 결과]
 #1 : Micron Technology, Morgan Stanley, Goldman Sachs, BlackRock, Citigroup, Nvidia, AppLovin, Microsoft, Dell Technologies, Charles Schwab Corporation

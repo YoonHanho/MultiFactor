@@ -3,6 +3,30 @@ import FinanceDataReader as fdr
 import pandas as pd
 import numpy as np
 
+def clean_us_symbol(symbol):
+    """
+    미국 주식 심볼 표준화 (yfinance 호환 및 데이터 병합 일관성을 위해)
+    예: BRK.B, BRK/B, BRKB -> BRK-B
+        BF.B, BF/B, BFB -> BF-B
+    """
+    if not isinstance(symbol, str):
+        return symbol
+    symbol = symbol.strip().upper()
+    symbol = symbol.replace('/', '-').replace('.', '-')
+    
+    # yfinance에서 하이픈(-) 구분자를 사용하는 대표적인 클래스 주식의 루트 심볼 목록
+    # 구분자 없이 붙어있는 경우(예: BRKB, BFB)만 선별적으로 변환하여
+    # ALB(알베말), APA(APA Corp), BA(보잉), FOXA(폭스), NWSA(뉴스콥) 등의 오탐지를 방지합니다.
+    hyphen_roots = {'BRK', 'BF', 'LEN', 'STZ', 'HEI', 'JW', 'MOG'}
+    
+    for root in hyphen_roots:
+        if symbol == f"{root}A":
+            return f"{root}-A"
+        elif symbol == f"{root}B":
+            return f"{root}-B"
+            
+    return symbol
+
 def get_us_stockinfo(N=500): 
     """
     미국 종목정보 추출 (GitHub 시가총액 데이터 + FDR 상세정보 병합)
@@ -12,6 +36,7 @@ def get_us_stockinfo(N=500):
     try:
         # 1. GitHub에서 최신 S&P 500 데이터 로드 (시가총액 등 순위용)
         df = pd.read_csv(url)
+        df['symbol'] = df['symbol'].astype(str).apply(clean_us_symbol)
         
         # 2. FDR에서 KR/US 전체 상장 종목 정보 로드 (명칭 일관성 유지)
         df_sp500 = fdr.StockListing('S&P500')
@@ -20,6 +45,7 @@ def get_us_stockinfo(N=500):
         
         # 3. FDR 데이터 병합 및 중복 제거
         fdr_stocks = pd.concat([df_sp500, df_nasdaq, df_nyse])
+        fdr_stocks['Symbol'] = fdr_stocks['Symbol'].astype(str).apply(clean_us_symbol)
         fdr_stocks = fdr_stocks.drop_duplicates(subset='Symbol')
         
         # 4. Symbol 기준으로 조인하여 FDR의 Name을 사용
@@ -56,9 +82,9 @@ def get_us_stockinfo(N=500):
         if 'Symbol' in df.columns:
             df = df.rename(columns={'Symbol': 'Code'})
 
-    # 7. 종목코드 클렌징 (yfinance 호환을 위해 / 를 - 로 변경. 예: BRK/B -> BRK-B)
+    # 7. 종목코드 클렌징 (yfinance 호환을 위해 표준화 적용)
     if 'Code' in df.columns:
-        df['Code'] = df['Code'].str.replace('/', '-', regex=False)
+        df['Code'] = df['Code'].astype(str).apply(clean_us_symbol)
 
     # 8. 상위 N개 추출 및 인덱스 초기화
     df = df.head(N).reset_index(drop=True)
