@@ -1,3 +1,6 @@
+import importlib
+import os
+
 from . import vmulti_idx
 from . import vmulti_kr
 from . import vmulti_us
@@ -13,7 +16,40 @@ from . import vheatmap_us
 from . import vtargetprice_us
 
 
+def _set_korean_font():
+    try:
+        fm = importlib.import_module("matplotlib.font_manager")
+        plt = importlib.import_module("matplotlib.pyplot")
+    except ImportError:
+        return None
+
+    font_paths = [
+        "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
+        "/usr/share/fonts/truetype/nanum/NanumBarunGothic.ttf",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJKkr-Regular.otf",
+        "C:/Windows/Fonts/malgun.ttf",
+        "C:/Windows/Fonts/malgunbd.ttf",
+        "/System/Library/Fonts/AppleSDGothicNeo.ttc",
+        "/Library/Fonts/AppleGothic.ttf",
+    ]
+
+    for font_path in font_paths:
+        if os.path.exists(font_path):
+            fm.fontManager.addfont(font_path)
+            font_name = fm.FontProperties(fname=font_path).get_name()
+            plt.rcParams["font.family"] = font_name
+            plt.rcParams["axes.unicode_minus"] = False
+            return font_name
+
+    plt.rcParams["axes.unicode_minus"] = False
+    return None
+
+
 class Visual:
+    def __init__(self):
+        self.korean_font = _set_korean_font()
+
     def multi_idx(self):
         vmulti_idx.multi_idx()
 

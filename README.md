@@ -88,7 +88,7 @@ mf_us = MultiFactorUS(N=50)
 시각화 분석 객체는 다음 코드로 생성합니다. 
 
 ```python
-visual = Visual()  
+vis = Visual()  
 ```
 
 <br>
