@@ -1,33 +1,35 @@
 # MultiFactor 📈
 
 **MultiFactor**는 국내상장주식(코스피/코스닥)뿐만 아니라 미국주식(NYSE, NASDAQ)을 대상으로 멀티팩터(Multi-Factor) 전략을 손쉽게 적용하고, 팩터별 점수 및 종합 순위를 산출해 주는 파이썬 패키지입니다. 
-종목별 주가와 재무 데이터 수집은 FinanceDataReader와 yfinance를 기반으로 구동됩니다. 
+종목별 주가와 재무 데이터 수집은 FinanceDataReader(국내주식)와 yfinance(미국주식)를 기반으로 구동됩니다. 
+또한 주식시장 및 종목 정보 취득에 유용한 시각화분석 패키지가 추가 되었습니다.  
 
 <br>
 
 ## 📌 멀티팩터 전략이란?
+
 주식 투자에서 멀티팩터(Multi-Factor) 기법은 주가의 수익률에 영향을 미치는 여러 가지 핵심 요인(팩터)을 동시에 고려하여 종목을 고르고 포트폴리오를 운용하는 데이터에 기반한 정량적 투자 전략입니다. 
 
 단순히 '저평가된 주식'만 찾거나 '상승 추세인 주식'만 사는 것이 아니라, 다양한 성공 요소를 결합하여 단일 팩터의 약점을 보완하고 보다 안정적인 초과 수익을 추구합니다. MultiFactor 라이브러리는 다음 3가지 핵심 팩터의 점수를 계산하고 이를 종합점수로 환산한 후 순위화한 결과를 제공합니다.
 
-| 팩터 (Factor) | 핵심 개념 | 주요 지표 |
-| :--- | :--- | :--- |
-| **모멘텀 (Momentum)** | 과거에 우수한 성과를 보인 주식이 미래에도 상승 추세를 이어갈 것이라는 가정 | 주가 상승률, 거래량 |
-| **밸류 (Value)** | 기업의 내재 가치 대비 저평가된 주식을 발굴 | PER, PBR |
-| **퀄리티 (Quality)** | 우량한 펀더멘털, 안정적인 수익성, 장기 성장 잠재력을 갖춘 기업에 집중 | 매출성장률, 영업이익성장률, ROE |
+| 팩터 (Factor)        | 핵심 개념                                      | 주요 지표               |
+|:------------------ |:------------------------------------------ |:------------------- |
+| **모멘텀 (Momentum)** | 과거에 우수한 성과를 보인 주식이 미래에도 상승 추세를 이어갈 것이라는 가정 | 주가 상승률, 거래량         |
+| **밸류 (Value)**     | 기업의 내재 가치 대비 저평가된 주식을 발굴                   | PER, PBR            |
+| **퀄리티 (Quality)**  | 우량한 펀더멘털, 안정적인 수익성, 장기 성장 잠재력을 갖춘 기업에 집중   | 매출성장률, 영업이익성장률, ROE |
 
 <br>
 
 ## ✨ 주요 기능
+
 * **국내 및 미국 주식 멀티팩터 데이터 제공:** 가치, 모멘텀, 퀄리티 지표 및 이를 합산한 종합 점수 산출
 
-| 구분 | 주요 기능 | 함수명 |
-| -------- | -------- | -------- |
-| 종목 정보 수집     | 지정한 시장(KR/US)의 시가총액 기준 상위 종목들의 기본 정보(종목코드, 종목명, 시가총액, 업종, 최근 종가 등)를 수집합니다. | get_stockinfo()  |
-| 멀티팩터 종합점수    | 종목별 멀티팩터 세부 지표 점수와 종합 점수, 그리고 전체 순위를 산출합니다. | get_score()  |
-| 투자스타일별 종합점수    | 3가지 투자 스타일(안정추구, 추세성장, 역발상 등)에 맞춰 가중치가 조정된 멀티팩터 종합 점수를 제공합니다. | get_score_adj_weight()  |
-| 종합점수 그룹화    | 산출된 종합 점수를 바탕으로 전체 종목을 N개의 그룹으로 분류하고, 그룹별 종목명을 출력합니다.| get_Ngroup()  |
-
+| 구분          | 주요 기능                                                                      | 함수명                    |
+| ----------- | -------------------------------------------------------------------------- | ---------------------- |
+| 종목 정보 수집    | 지정한 시장(KR/US)의 시가총액 기준 상위 종목들의 기본 정보(종목코드, 종목명, 시가총액, 업종, 최근 종가 등)를 수집합니다. | get_stockinfo()        |
+| 멀티팩터 종합점수   | 종목별 멀티팩터 세부 지표 점수와 종합 점수, 그리고 전체 순위를 산출합니다.                                | get_score()            |
+| 투자스타일별 종합점수 | 3가지 투자 스타일(안정추구, 추세성장, 역발상 등)에 맞춰 가중치가 조정된 멀티팩터 종합 점수를 제공합니다.              | get_score_adj_weight() |
+| 종합점수 그룹화    | 산출된 종합 점수를 바탕으로 전체 종목을 N개의 그룹으로 분류하고, 그룹별 종목명을 출력합니다.                      | get_Ngroup()           |
 
 * **투자 유형별 가중치 조절한 멀티팩터 데이터 제공 :** 투자 스타일에 맞춘 3가지 모델 제공
   * **가치성장:** 밸류 + 퀄리티 조합 ("기업의 본질적인 가치와 안정성을 중요하게 생각하며, 장기적인 관점에서 투자")
@@ -36,14 +38,16 @@
 
 <br>
 
-
 ## ⚙️ 설치 방법 (Installation)
+
  다음 코드를 실행하여 각자의 PC(또는 실습 환경)에 MultiFactor 라이브러리를 설치합니다. 이 과정은 최초 1회만 수행하면 됩니다.
+
 ```python
 !pip install MultiFactor
 ```
 
 만약 기존에 설치된 라이브러리를 최신 버전으로 업데이트해야 한다면 아래의 코드를 실행합니다.
+
 ```python
 !pip install --upgrade MultiFactor
 ```
@@ -52,33 +56,49 @@
 
 ## 🚀 빠른 시작 (Quick Start)
 
-### 1. 패키지 불러오기 
+### 1. 패키지 불러오기
+
 다음 코드로 멀티팩터 패키지를 불러옵니다. 
+
 ```python
 # 국내주식 
 from MultiFactor import MultiFactorKR 
 
 # 미국주식
 from MultiFactor import MultiFactorUS
+
+# 시각화 분석
+from MultiFactor import Visual 
 ```
 
 <br>
 
-### 2. 멀티팩터 객체 생성  
+### 2. 멀티팩터 객체 생성
+
 멀티팩터 객체 생성 시 수집 대상 종목 수(`N`)를 지정합니다. N이 커질수록 데이터 수집 시간이 길어지므로, 초기 테스트에는 5~50 사이로 지정한 후 차츰 늘려가기를 권장합니다. 
+
 ```python
 # 국내 시가총액 상위 50개 종목
 mf_kr = MultiFactorKR(N=50)
-  
+
 # 미국 시가총액 상위 50개 종목 
 mf_us = MultiFactorUS(N=50)  
 ```
+
+시각화 분석 객체는 다음 코드로 생성합니다. 
+
+```python
+visual = Visual()  
+```
+
 <br>
 
-### 3. 종목 정보 수집 
+### 3. 종목 정보 수집
+
 멀티팩터 객체에서 지정한 종목수(N) 만큼 종목 정보 데이터를 생성합니다. 
 
-(1) 국내주식
+① 국내주식
+
 ```python
 df = mf_kr.get_stockinfo() 
 df[['Code', 'Name', 'Marcap']].head()   
@@ -127,8 +147,8 @@ df[['Code', 'Name', 'Marcap']].head()
   </tbody>
 </table>
 
+② 미국 주식
 
-2. 미국 주식
 ```python
 df = mf_us.get_stockinfo() 
 df[['Code', 'Name', 'MarketCap']].head()   
@@ -177,11 +197,10 @@ df[['Code', 'Name', 'MarketCap']].head()
   </tbody>
 </table>
 
-
 <br>
 
-
 ### 4. 멀티팩터 종합 점수 데이터 수집
+
 `get_score` 함수로 멀티팩터 종합점수 데이터를 간단하게 생성할 수 있습니다. 동일한 함수로 한국과 미국 시장 모두 분석이 가능합니다.
 
 이 데이터프레임 안에는 분석에 필요한 총 23개의 컬럼(열)이 담겨 있습니다. 컬럼은 크게 4개 유형으로 구분됩니다. 
@@ -292,7 +311,6 @@ df[cols].head()
   </tbody>
 </table>
 
-
 (2) 미국주식
 
 ```python
@@ -304,6 +322,7 @@ cols = ['scode', 'sname', 'mom_price', 'mom_vol', 'PER', 'PBR',
 
 df[cols].head()
 ```
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -394,6 +413,7 @@ df[cols].head()
 <b>② 종합지표 순위 예시</b>
 
 (1) 국내주식 
+
 ```python
 mf_kr = MultiFactorKR(N=10) 
 df = mf_kr.get_score()
@@ -403,6 +423,7 @@ cols = ['scode', 'sname', '모멘텀_주가', '모멘텀_거래량', '밸류_PER
 
 df[cols].head()
 ```
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -488,8 +509,8 @@ df[cols].head()
   </tbody>
 </table>
 
-
 (2) 미국주식 
+
 ```python
 mf_us = MultiFactorUS(N=10) 
 df = mf_us.get_score()
@@ -499,6 +520,7 @@ cols = ['scode', 'sname', '모멘텀_주가', '모멘텀_거래량', '밸류_PER
 
 df[cols].head()
 ```
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -597,6 +619,7 @@ df = mf_kr.get_score()
 cols = ['scode', 'sname', '종합점수', '종합순위', '종합순위_퍼센트']
 df[cols].head()
 ```
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -652,8 +675,8 @@ df[cols].head()
   </tbody>
 </table>
 
-
 (2) 미국주식 
+
 ```python
 mf_us = MultiFactorUS(N=10) 
 df = mf_us.get_score()
@@ -661,6 +684,7 @@ df = mf_us.get_score()
 cols = ['scode', 'sname', '종합점수', '종합순위', '종합순위_퍼센트']
 df[cols].head()
 ```
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -718,13 +742,14 @@ df[cols].head()
 
 <br>
 
-### 5. 투자 스타일별 종합점수 출력 
+### 5. 투자 스타일별 종합점수 출력
 
 3가지로 분류된 투자 유형별로 가중치를 조절한 멀티팩터 점수를 산출합니다. 국내와 미국 시장 모두 동일하게 적용 가능합니다.
 
 <b>① 가치 성장 전략 : 밸류 + 퀄리티 조합</b>
 
 (1) 국내주식 
+
 ```python
 # 시가총액 상위 100종목 
 mf_kr = MultiFactorKR(N=100)  
@@ -750,7 +775,7 @@ df[['scode', 'sname', '종합점수', '종합순위']].head()
     <tr>
       <th>0</th>
       <td>028050</td>
-      <td>삼성E&amp;A</td>
+      <td>삼성E&A</td>
       <td>24</td>
       <td>1</td>
     </tr>
@@ -785,8 +810,8 @@ df[['scode', 'sname', '종합점수', '종합순위']].head()
   </tbody>
 </table>
 
-
 (2) 미국주식
+
 ```python
 # 시가총액 상위 100종목 
 mf_us = MultiFactorUS(N=100)  
@@ -797,6 +822,7 @@ df = mf_us.get_score_adj_weight(df, weight='가치성장')
 
 df[['scode', 'sname', '종합점수', '종합순위']].head()  
 ```
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -850,8 +876,8 @@ df[['scode', 'sname', '종합점수', '종합순위']].head()
 
 <b>② 추세 성장 전략 : 모멘텀 + 퀄리티 조합</b>
 
-
 (1) 국내주식 
+
 ```python
 # 시가총액 상위 100종목 
 mf_kr = MultiFactorKR(N=100)  
@@ -905,16 +931,15 @@ df[['scode', 'sname', '종합점수', '종합순위']].head()
     <tr>
       <th>4</th>
       <td>028050</td>
-      <td>삼성E&amp;A</td>
+      <td>삼성E&A</td>
       <td>22</td>
       <td>5</td>
     </tr>
   </tbody>
 </table>
 
-
-
 (2) 미국주식
+
 ```python
 # 시가총액 상위 100종목 
 mf_us = MultiFactorUS(N=100)  
@@ -925,6 +950,7 @@ df = mf_us.get_score_adj_weight(df, weight='추세성장')
 
 df[['scode', 'sname', '종합점수', '종합순위']].head()  
 ```
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -978,8 +1004,8 @@ df[['scode', 'sname', '종합점수', '종합순위']].head()
 
 <b>③ 역발상 전략 : 밸류 + 모멘텀 조합</b>
 
-
 (1) 국내주식 
+
 ```python
 # 시가총액 상위 100종목 
 mf_kr = MultiFactorKR(N=100)  
@@ -990,6 +1016,7 @@ df = mf_kr.get_score_adj_weight(df, weight='역발상')
 
 df[['scode', 'sname', '종합점수', '종합순위']].head()  
 ```
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1040,6 +1067,7 @@ df[['scode', 'sname', '종합점수', '종합순위']].head()
 </table>
 
 (2) 미국주식
+
 ```python
 # 시가총액 상위 100종목 
 mf_us = MultiFactorUS(N=100)  
@@ -1050,6 +1078,7 @@ df = mf_us.get_score_adj_weight(df, weight='역발상')
 
 df[['scode', 'sname', '종합점수', '종합순위']].head()  
 ```
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1099,12 +1128,24 @@ df[['scode', 'sname', '종합점수', '종합순위']].head()
   </tbody>
 </table>
 
+※ (참고) 밸류, 모멘텀, 퀄러티를 동일한 비중으로 조합하는 기본 옵션을 적용하려면 다음 코드를 수행합니다. 
+
+```python
+# 기본값인 균등(동일) 배분 전략 적용 : 국내주식
+df = mf_kr.get_score_adj_weight(df, weight='균등')
+
+# 기본값인 균등(동일) 배분 전략 적용 : 미국주식
+df = mf_us.get_score_adj_weight(df, weight='균등')
+```
+
 <br>
 
 ### 6. 종합점수별 그룹화 출력
+
 `get_Ngroup()` 함수를 사용하면 전체 종목을 원하는 개수의 그룹으로 깔끔하게 묶어 요약할 수 있습니다.
 
-(1) 국내주식
+① 국내주식
+
 ```python
 # 시가총액 상위 100종목
 mf_kr = MultiFactorKR(N=100)
@@ -1126,8 +1167,8 @@ mf_kr.get_Ngroup(df, Ngroup=10)
 # 10 : LG, 레인보우로보틱스, 한미반도체, POSCO홀딩스, LG에너지솔루션, 카카오, LG화학, 삼성바이오로직스, 한진칼, 포스코퓨처엠
 ```
 
+② 미국주식 
 
-(2) 미국주식 
 ```python
 # 시가총액 상위 100종목
 mf_us = MultiFactorUS(N=100)
@@ -1148,6 +1189,174 @@ mf_us.get_Ngroup(df, Ngroup=10)
 #9 : Walt Disney Company (The), Coca-Cola Company (The), RTX Corporation, Parker Hannifin, Danaher Corporation, Deere & Company, Procter & Gamble, ConocoPhillips, Accenture, Linde plc
 #10 : Palo Alto Networks, Qualcomm, Welltower, ExxonMobil, Home Depot (The), Walmart, Honeywell, Chevron Corporation, UnitedHealth Group, Tesla, Inc.
 ```
+
+<br>
+
+### 7. 시각화 분석
+
+주식시장 및 개별 종목 분석에 유용한 다양한 시각화 결과를 제공합니다. 파이썬의 ipywidget 라이브러를 활용하여 차트 구성 옵션을 대화형으로 선택할 수 있도록 구성하였습니다. 
+
+> 💡 **안내사항**
+> - 차트 출력 시 한글이 깨지는 현상을 방지하기 위해, 환경에 맞게 한글 폰트를 설정하세요.
+> - 다수의 종목 데이터를 동시에 수집할 경우, 로컬 환경(개인 PC)에서는 `yfinance` API의 요청 제한으로 인해 IP 차단이 발생할 수 있습니다. 따라서 안정적인 데이터 수집을 위해 **구글 Colab** 환경에서의 실행을 권장합니다.
+
+
+
+
+| 함수구분     | 설명                          | 함수이름               |
+| -------- | --------------------------- | ------------------ |
+| 복합 차트    | 지수별 라인 복합 차트                | vis.multi_idx      |
+| 복합 차트    | 국내주식 라인 복합 차트               | vis.multi_kr       |
+| 복합 차트    | 미국주식 라인 복합 차트               | vis.multi_us       |
+| 지표별 수익률  | 주요 지표 기간 수익률 비교 차트          | vis.compare_idx    |
+| 누적 수익률   | 지표별 누적수익률 비교 차트             | vis.ret_idx        |
+| 누적 수익률   | 국내주식 누적수익률 비교 차트            | vis.ret_kr         |
+| 누적 수익률   | 미국주식 누적수익률 비교 차트            | vis.ret_us         |
+| 실적재무 종합  | 국내주식 실적 및 밸류 추이             | vis.finance_kr     |
+| 업종종목 트리맵 | 미국주식 주요종목 주가등락율 트리맵         | vis.treemap_us     |
+| 수익률 히트맵  | 지수 연월 수익률 히트맵               | vis.heatmap_idx    |
+| 수익률 히트맵  | 국내주식 연월 수익률 히트맵             | vis.heatmap_kr     |
+| 수익률 히트맵  | 미국주식 연월 수익률 히트맵             | vis.heatmap_us     |
+| 목표가 분석   | 미국주식 목표가 대비 현재가 차이(괴리율) 순위표 | vis.targetprice_us |
+
+① (복합 차트) 지수별 라인 복합 차트
+
+```python
+vis.multi_idx()
+```
+
+![① (복합 차트) 지수별 라인 복합 차트](docs/images/① (복합 차트) 지수별 라인 복합 차트.png)
+
+<br>
+
+② (복합 차트) 국내주식 라인 복합 차트
+
+```python
+vis.multi_kr()
+```
+
+![② (복합 차트) 국내주식 라인 복합 차트](docs/images/② (복합 차트) 국내주식 라인 복합 차트.png)
+
+<br>
+
+③ (복합 차트) 미국주식 라인 복합 차트
+
+```python
+vis.multi_us()
+```
+
+![③ (복합 차트) 미국주식 라인 복합 차트](docs/images/③ (복합 차트) 미국주식 라인 복합 차트.png)
+
+<br>
+
+④ (지표별 수익률) 주요 지표 기간 수익률 비교 차트
+
+```python
+vis.compare_idx()
+```
+
+![④ (지표별 수익률) 주요 지표 기간 수익률 비교 차트](docs/images/④ (지표별 수익률) 주요 지표 기간 수익률 비교 차트.png)
+
+<br>
+
+⑤ (누적 수익률) 지표별 누적수익률 비교 차트
+
+```python
+vis.ret_idx()
+```
+
+![⑤ (누적 수익률) 지표별 누적수익률 비교 차트](docs/images/⑤ (누적 수익률) 지표별 누적수익률 비교 차트.png)
+
+<br>
+
+③ (누적 수익률) 국내주식 누적수익률 비교 차트
+
+```python
+vis.ret_kr()
+```
+
+![③ (누적 수익률) 국내주식 누적수익률 비교 차트](docs/images/③ (누적 수익률) 국내주식 누적수익률 비교 차트.png)
+
+<br>
+
+⑦ (누적 수익률) 미국주식 누적수익률 비교 차트
+
+```python
+vis.ret_us()
+```
+
+![⑦ (누적 수익률) 미국주식 누적수익률 비교 차트](docs/images/⑦ (누적 수익률) 미국주식 누적수익률 비교 차트.png)
+
+<br>
+
+⑧ (실적재무 종합) 국내주식 실적 및 밸류 추이
+
+```python
+vis.finance_kr()
+```
+
+![⑧ (실적재무 종합) 국내주식 실적 및 밸류 추이0](docs/images/⑧ (실적재무 종합) 국내주식 실적 및 밸류 추이0.png)
+![⑧ (실적재무 종합) 국내주식 실적 및 밸류 추이](docs/images/⑧ (실적재무 종합) 국내주식 실적 및 밸류 추이.png)
+
+<br>
+
+⑨ (업종종목 트리맵) 미국주식 주요종목 주가등락율 트리맵
+구글 Colab에서 수행시 다음 코드를 미리 수행하여 트리맵이 정상적으로 출력되도록 합니다. 
+
+```python
+# 구글 colab에서 트리맵 렌더링 명령어
+from google.colab import output
+output.enable_custom_widget_manager()
+```
+
+다음 코드로 미국주식 주가등락률 트리맵을 출력합니다. 
+
+```python
+vis.treemap_us()
+```
+
+![⑨ (업종종목 트리맵) 미국주식 주요종목 주가등락율 트리맵](docs/images/⑨ (업종종목 트리맵) 미국주식 주요종목 주가등락율 트리맵.png)
+
+<br>
+
+⑩ (수익률 히트맵) 지수 연월 수익률 히트맵
+
+```python
+vis.heatmap_idx()
+```
+
+![⑩ (수익률 히트맵) 지수 연월 수익률 히트맵](docs/images/⑩ (수익률 히트맵) 지수 연월 수익률 히트맵.png)
+
+<br>
+
+⑪ (수익률 히트맵) 국내주식 연월 수익률 히트맵
+
+```python
+vis.heatmap_kr()
+```
+
+![⑪ (수익률 히트맵) 국내주식 연월 수익률 히트맵](docs/images/⑪ (수익률 히트맵) 국내주식 연월 수익률 히트맵.png)
+
+<br>
+
+⑫ (수익률 히트맵) 미국주식 연월 수익률 히트맵
+
+```python
+vis.heatmap_us()
+```
+
+![⑫ (수익률 히트맵) 미국주식 연월 수익률 히트맵](docs/images/⑫ (수익률 히트맵) 미국주식 연월 수익률 히트맵.png)
+
+<br>
+
+⑬ (목표가 분석) 미국주식 목표가 대비 현재가 차이(괴리율) 순위표
+
+```python
+vis.targetprice_us()
+```
+
+![⑬ (목표가 분석) 미국주식 목표가 대비 현재가 차이(괴리율) 순위표](docs/images/⑬ (목표가 분석) 미국주식 목표가 대비 현재가 차이(괴리율) 순위표.png)
+
 <br>
 
 ## ⚠️ 투자자 유의사항 (Disclaimer)

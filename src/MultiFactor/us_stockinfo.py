@@ -48,9 +48,24 @@ def get_us_stockinfo(N=500):
         fdr_stocks['Symbol'] = fdr_stocks['Symbol'].astype(str).apply(clean_us_symbol)
         fdr_stocks = fdr_stocks.drop_duplicates(subset='Symbol')
         
-        # 4. Symbol 기준으로 조인하여 FDR의 Name을 사용
-        # fdr_stocks 에는 Symbol, Name, Sector, Industry 컬럼이 포함됨
-        df = df.merge(fdr_stocks[['Symbol', 'Name']], left_on='symbol', right_on='Symbol', how='left')
+        # FDR Sector 이름을 GitHub CSV의 industry 대분류 형태로 변환하기 위한 맵핑
+        sector_mapping = {
+            'Information Technology': 'Technology',
+            'Financials': 'Finance',
+            'Materials': 'Basic Materials',
+            'Communication Services': 'Telecommunications'
+        }
+        fdr_stocks['Sector_mapped'] = fdr_stocks['Sector'].map(sector_mapping).fillna(fdr_stocks['Sector'])
+        
+        # 4. Symbol 기준으로 조인하여 FDR의 Name 및 맵핑된 Sector(대분류)를 가져옴
+        df = df.merge(
+            fdr_stocks[['Symbol', 'Name', 'Sector_mapped']], 
+            left_on='symbol', right_on='Symbol', 
+            how='left'
+        )
+        
+        # GitHub CSV의 industry 컬럼에 결측치(NaN)가 있으면 FDR에서 맵핑한 Sector로 보완
+        df['industry'] = df['industry'].fillna(df['Sector_mapped'])
         
         # 5. 컬럼명을 기존 시스템과 동일하게 변경 (GitHub의 name 대신 FDR의 Name 사용)
         column_map = {
