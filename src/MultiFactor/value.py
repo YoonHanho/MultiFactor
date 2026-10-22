@@ -36,8 +36,8 @@ def get_value(stock_list):
             pbr = pbr_series.iloc[-1] if not pbr_series.empty else np.nan
             result.append([scode, per, pbr])
     
-        except:
-            print("추출오류 : ", sname) # 에러 종목코드 출력
+        except Exception as e:
+            print("추출오류 : ", sname, f"({type(e).__name__}: {e})") # 에러 종목코드 및 원인 출력
             result.append([scode, None, None])
 
     
