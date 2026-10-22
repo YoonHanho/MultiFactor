@@ -2,8 +2,11 @@
 
 import json
 import re
+import time
+import ssl
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+from urllib.error import URLError
 
 import pandas as pd
 import numpy as np
@@ -65,10 +68,23 @@ def get_daum_consensus(
             "Accept": "text/html,application/xhtml+xml",
         },
     )
-    with urlopen(request, timeout=timeout) as response:
-        html = response.read().decode(
-            response.headers.get_content_charset() or "utf-8"
-        )
+    html = None
+    max_retries = 3
+    last_err = None
+
+    for attempt in range(max_retries):
+        try:
+            with urlopen(request, timeout=timeout) as response:
+                html = response.read().decode(
+                    response.headers.get_content_charset() or "utf-8"
+                )
+            break
+        except (URLError, ssl.SSLError, ConnectionError, OSError) as e:
+            last_err = e
+            if attempt < max_retries - 1:
+                time.sleep(1.0)
+            else:
+                raise last_err
 
     rows_by_tab = {
         match.group("tab"): json.loads(match.group("rows"))
