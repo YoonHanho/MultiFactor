@@ -5,6 +5,11 @@ import numpy as np
 
 import time
 
+try:
+    from .daum_consensus import get_daum_finstate
+except ImportError:
+    from daum_consensus import get_daum_finstate
+
 def get_value(stock_list):
     
     result = []
@@ -19,9 +24,16 @@ def get_value(stock_list):
             print(f"{i}/{len(stock_list)} 진행 중... ({sname})")
     
         try:
-            # 재무제표 데이터 추출 (연간 K-IFRS 연결 기준)
-            data = fdr.SnapDataReader(f'NAVER/FINSTATE-2Y/{scode}').dropna(subset='영업이익') # 연간
-            per, pbr = data['PER(배)'].iloc[-1], data['PBR(배)'].iloc[-1]
+            # 재무제표 데이터 추출 : 1. SnapDataReader 먼저 시도 -> 에러 시 다음증권 컨센서스로 대체
+            try:
+                data = fdr.SnapDataReader(f'NAVER/FINSTATE-2Y/{scode}').dropna(subset='영업이익') # 연간
+            except Exception:
+                data = get_daum_finstate(scode, freq='Y').dropna(subset='영업이익')
+
+            per_series = data['PER(배)'].dropna()
+            pbr_series = data['PBR(배)'].dropna()
+            per = per_series.iloc[-1] if not per_series.empty else np.nan
+            pbr = pbr_series.iloc[-1] if not pbr_series.empty else np.nan
             result.append([scode, per, pbr])
     
         except:

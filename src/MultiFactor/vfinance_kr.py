@@ -10,6 +10,10 @@ import concurrent.futures
 # 데이터 수집 라이브러리
 import FinanceDataReader as fdr
 import yfinance as yf
+try:
+	from .daum_consensus import get_daum_finstate
+except ImportError:
+	from daum_consensus import get_daum_finstate
 
 # 시각화 라이브러리
 import matplotlib.pyplot as plt
@@ -57,13 +61,17 @@ def finance_kr():
 
 		# --- [2] 밸류 & 퀄리티 지표: 재무 데이터 막대그래프 ---
 		try:
-			# 연간(Y) 또는 분기(Q) 재무제표 동적 수집
-			fs = fdr.SnapDataReader(f'NAVER/FINSTATE-{YQ}/{stock_code}')
+			# 연간(Y) 또는 분기(Q) 재무제표 동적 수집 (SnapDataReader 먼저 시도 -> 에러 시 다음증권 대체)
+			try:
+				fs = fdr.SnapDataReader(f'NAVER/FINSTATE-{YQ}/{stock_code}')
+			except Exception:
+				fs = get_daum_finstate(stock_code, freq=YQ)
+
 			period_text = "연간" if YQ == 'Y' else "분기"
 
 			cols = ['PER(배)', 'PBR(배)', 'ROE(%)', '매출액', '영업이익', '당기순이익']
 			res = fs[cols].T.dropna(axis=1, how='all')
-			res.columns = [x.strftime('%y-%m') for x in res.columns]
+			res.columns = [x.strftime('%y-%m') if hasattr(x, 'strftime') else str(x) for x in res.columns]
 
 			fig_vq, axes = plt.subplots(2, 3, figsize=(14, 8), tight_layout=True)
 			fig_vq.suptitle(f"[{stock_name}] 밸류 & 퀄리티 지표 ({period_text} 재무제표)", fontsize=15, fontweight='bold', y=1.02)
