@@ -5,6 +5,11 @@ import numpy as np
 
 import time
 
+try:
+    from .daum_consensus import get_daum_finstate
+except ImportError:
+    from daum_consensus import get_daum_finstate
+
 
 def get_quality(stock_list):
     result_fin = []
@@ -18,10 +23,15 @@ def get_quality(stock_list):
             print(f"{i}/{len(stock_list)} 진행 중... ({sname})")
     
         try:
-            # 재무 데이터 추출 : 분기 K-IFRS 연결 기준
-            data = fdr.SnapDataReader(f'NAVER/FINSTATE-2Q/{scode}').dropna(subset='영업이익')  # 분기
+            # 재무 데이터 추출 : 1. SnapDataReader 먼저 시도 -> 에러 시 다음증권 컨센서스로 대체
+            try:
+                data = fdr.SnapDataReader(f'NAVER/FINSTATE-2Q/{scode}').dropna(subset='영업이익')  # 분기
+            except Exception:
+                data = get_daum_finstate(scode, freq='Q').dropna(subset='영업이익')
+
             fin = (data[['매출액','영업이익','당기순이익']].pct_change()*100).iloc[-1].to_list()
-            roe = data['ROE(%)'].iloc[-1]
+            roe_series = data['ROE(%)'].dropna()
+            roe = roe_series.iloc[-1] if not roe_series.empty else np.nan
             result_fin.append([scode] + fin + [roe])
     
         except:
