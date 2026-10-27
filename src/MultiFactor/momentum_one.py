@@ -1,8 +1,12 @@
 import FinanceDataReader as fdr
-
 import pandas as pd
 import numpy as np
+import yfinance as yf
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 from datetime import date
+
 
 def get_momentum_one(scode):
     """
@@ -18,6 +22,117 @@ def get_momentum_one(scode):
         vol : 거래량 모멘텀 지표
     """
 
+
+    def get_stockinfo_yf(N=10): 
+        """
+        종목정보 추출 
+          2026-10-27 
+            1. fdr 오류시, 깃헙에 적재된 종목정보 우회 추출 코드 추가 
+               깃헙 적재 파일 : 26년 10월 24일 업로드 (KRX Data Market, KRX Open API 등에서 종목정보 찾을 수 있음) 
+            2. 종가 정보 반영 안되는 경우, 우회 코드 적용 
+          
+        """
+        # 거래소 전체 추출 (코스피, 코스닥 대상) 
+        try: 
+            df = fdr.StockListing('KRX').query("Market in ['KOSPI', 'KOSDAQ']")
+
+            # 종목별 종가(Close) 문자형에서 수치형(integer)으로 변환
+            df['Close'] = df['Close'].astype(int)
+
+            # 제외조건
+            # 소형주: 시가총액 1,000억 원 미만 종목 제외 적용
+            df = df.query(" Marcap >= 100000000000 ")
+
+            # 저유동성 : 일 거래량 2,000주 미만 제외 적용
+            df = df.query(" Volume >= 2000 ")
+
+            # 동전주: 높은 변동성 위험을 고려하여 주가 1,000원 미만 종목 제외 적용
+            df = df.query(" Close >= 1000 ")
+
+            # 우선주: 낮은 거래량과 본주와의 주가 차이(괴리율)로 인한 분석의 한계로 제외 (종목코드 끝자리 5,7,9,K) 적용
+            df = df[ df['Code'].apply(lambda x: False if str(x)[-1] in ['5','7','9','K'] else True) ]
+
+            # 스팩(SPAC), 리츠, 벤처투자 등 : 재무 데이터의 실효성이 없어 제외 적용
+            df = df[ ~df['Name'].str.contains('스팩|리츠|리얼티|인프라|유전|벤처') ]
+
+            # 시가총액 N종목 추출
+            df = df.sort_values(by='Marcap', ascending=False).iloc[:N]
+
+            # 데이터프레임 인덱스 초기화
+            df = df.reset_index(drop=True)
+
+            # 최종 종목 추출 건수 출력
+            print("종목 추출 건수 ", len(df))
+        
+        
+        except:
+            # fdr 오류시 깃헙 업로드 파일 다운로드 
+            url = "https://raw.githubusercontent.com/YoonHanho/MultiFactorData/main/fdr_stocklisting.csv"
+            df = pd.read_csv(url, dtype={'Code': str})
+            df['Code'] = df['Code'].astype(str).str.zfill(6)
+
+            # 종목별 종가(Close) 문자형에서 수치형(integer)으로 변환
+            df['Close'] = df['Close'].astype(int)
+
+            # 제외조건
+            # 소형주: 시가총액 1,000억 원 미만 종목 제외 적용
+            df = df.query(" Marcap >= 100000000000 ")
+
+            # 저유동성 : 일 거래량 2,000주 미만 제외 적용
+            df = df.query(" Volume >= 2000 ")
+
+            # 동전주: 높은 변동성 위험을 고려하여 주가 1,000원 미만 종목 제외 적용
+            df = df.query(" Close >= 1000 ")
+
+            # 우선주: 낮은 거래량과 본주와의 주가 차이(괴리율)로 인한 분석의 한계로 제외 (종목코드 끝자리 5,7,9,K) 적용
+            df = df[ df['Code'].apply(lambda x: False if str(x)[-1] in ['5','7','9','K'] else True) ]
+
+            # 스팩(SPAC), 리츠, 벤처투자 등 : 재무 데이터의 실효성이 없어 제외 적용
+            df = df[ ~df['Name'].str.contains('스팩|리츠|리얼티|인프라|유전|벤처') ]
+
+            # 시가총액 N종목 추출
+            df = df.sort_values(by='Marcap', ascending=False).iloc[:N]
+
+            # 데이터프레임 인덱스 초기화
+            df = df.reset_index(drop=True)
+
+            # 최종 종목 추출 건수 출력
+            print("종목 추출 건수 ", len(df))
+
+        return df
+    
+    
+    def yfDataReader(scode, SD, ED, stock_list_yf):
+
+        # 1. yfinance로 데이터 수집
+        #   종목코드 형식 : '005930.KS' 날짜 형식 : 2026-10-23
+        match = stock_list_yf.query(f"Code == '{scode}'")
+        if not match.empty:
+            scode_yf = match['scode_yf'].iloc[0]
+        else:
+            scode_yf = f"{scode}.KS"
+
+        SD = '-'.join([SD[:4], SD[4:6], SD[6:]])
+        ED = '-'.join([ED[:4], ED[4:6], ED[6:]])        
+        df = yf.download(scode_yf, start=SD, progress=False)   # end는 생략 : 최근일자 자동 지정 
+
+        # 2. yfinance 버전에 따라 컬럼이 멀티인덱스(MultiIndex)로 반환될 경우 단일 인덱스로 정리
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
+
+        # 3. FinanceDataReader와 동일한 컬럼 순서 및 구성 맞추기
+        # yfinance에는 'Change' 컬럼이 없으므로 종가(Close)를 기준으로 일일 등락률을 계산하여 추가합니다.
+        df['Change'] = df['Close'].pct_change()
+
+        # 필요한 컬럼만 정확히 순서대로 선택
+        df = df[['Open', 'High', 'Low', 'Close', 'Volume', 'Change']]
+
+        # 4. 인덱스 이름 설정 ('Date') 및 날짜 포맷 맞추기
+        df.index.name = 'Date'
+
+        return df 
+
+
     # 날짜 : SD 작년 1/2, ED는 오늘 
     ED = date.today().strftime('%Y%m%d')   # 오늘
     
@@ -30,8 +145,16 @@ def get_momentum_one(scode):
 
     try: 
 
-        # 1. 주가 및 거래량 데이터 수집 (여기는 에러나면 멈춰서 확인해야 하므로 try-except 제거)
-        df = fdr.DataReader(scode, SD, ED)
+        # 1. 주가 및 거래량 데이터 수집 (fdr 에러나면 yfinance)
+        try:
+            df = fdr.DataReader(scode, SD, ED)
+            if df is None or df.empty:
+                raise ValueError("fdr DataReader returned empty dataframe")
+        except:   # FDR 오류시 yfinance 에서 데이터 수집
+            stock_list_yf = get_stockinfo_yf(9999)[['Code', 'Name', 'Market']]  # 9999 : 전체 코드 
+            stock_list_yf['scode_yf'] = np.where(stock_list_yf['Market'] == 'KOSPI', stock_list_yf['Code'] + '.KS', stock_list_yf['Code'] + '.KQ') 
+            df = yfDataReader(scode, SD, ED, stock_list_yf) 
+    
     
         # 2. 주가 모멘텀 지표 생성
         # 단기 (1일, 1주, 1개월) - 데이터가 너무 없으면 에러가 나는 게 맞으므로 그대로 둠
@@ -70,6 +193,3 @@ def get_momentum_one(scode):
         print(f"에러가 발생했습니다. 상세 내용: {e}")
         print("추출오류 : ", scode) 
         return None
-    
-        
-    
